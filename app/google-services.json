@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "873551401245",
+    "project_id": "ron-projects-85893",
+    "storage_bucket": "ron-projects-85893.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:69053a7b6f587c24b091f4",
+        "android_client_info": {
+          "package_name": "com.ron.chatting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873551401245:android:f2f66e285adfbc09b091f4",
+        "android_client_info": {
+          "package_name": "com.ron.sinch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBipUtyYWm7fq4cRlS3wxZCIbnXyVe79yQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

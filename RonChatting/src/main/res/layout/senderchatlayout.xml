@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/frame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="5sp"
+        android:elevation="10dp"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:maxWidth="340dp"
+        android:visibility="visible"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:cardBackgroundColor="@color/senderChatBoxColor"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="10sp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:foregroundTint="@color/backgroundColor"
+            android:maxWidth="270dp"
+            android:paddingVertical="1sp"
+            android:paddingStart="15dp"
+            android:paddingEnd="25dp"
+            android:textColor="@color/senderTextColor"
+            android:textSize="14sp"
+            android:visibility="visible"
+            tools:text="@string/chat_is_not_yet_begain_be_the_one_to_initiate" />
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="4dp"
+        android:id="@+id/messageTiming"
+        tools:text="8 Feb 2024 9:40 pm"
+        android:textColor="@color/senderChatBoxColor"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/frame"
+        app:layout_constraintTop_toTopOf="@+id/frame" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+

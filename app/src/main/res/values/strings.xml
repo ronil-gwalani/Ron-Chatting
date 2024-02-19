@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Chatting</string>
-</resources>
+    <string name="app_name">Ron Chatting</string>
+    <string name="set_your_userid">Set Your UserID</string>
+    <string name="enter_user_name">Enter User Name</string>
+    <string name="register">Register</string>
+    <string name="logout">Logout</string>
+    <string name="your_userid">Your UserID:</string>
+    <string name="make_a_new_call_and_invite_other_to_join">Make a new call and invite other to join:</string>
+    <string name="invitee_userid">Invitee UserID</string>
+
+    <string name="invitee_user_name">Invitee User Name</string></resources>

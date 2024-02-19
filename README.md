@@ -58,7 +58,7 @@ plugins {
 In your app-level build.gradle file, add the dependency for the Chatting library:
 ```kotlin
 dependencies {
-    implementation 'com.github.ronil-gwalani:Ron-Chatting:v1:0:1'
+    implementation 'com.github.ronil-gwalani:Ron-Chatting:v1.0.1'
 }
 ```
 

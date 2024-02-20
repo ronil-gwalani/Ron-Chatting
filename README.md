@@ -73,7 +73,7 @@ dependencies {
 ```kotlin
 class FCMService : FirebaseMessagingService() {
 
-    private val ronChatting by lazy{ RonChattingUtils(this//context) }
+    private val ronChatting by lazy{ RonChattingUtils(this) }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)

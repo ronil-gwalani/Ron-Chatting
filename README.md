@@ -13,6 +13,7 @@ Firebase Chat Library for Android is a powerful and easy-to-use library that ena
 
 5. **User-friendly Design:** The library's user interface is designed to be intuitive and user-friendly.
 
+## for video tutorial checkout this video on youtube https://youtu.be/Zrpu-j9NGLM
 
 
 ## Step 1. Add the JitPack repository to your build file

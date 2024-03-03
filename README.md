@@ -198,4 +198,4 @@ For any questions or support related to Chatting Library, you can reach out to u
 
 ## Credits
 
-The Chatting Picker Library library was developed by [Ronil Gwalani](https://github.com/ronil-gwalani) feel free to contact in case of any query.
+The Chatting Picker Library was developed by [Ronil Gwalani](https://github.com/ronil-gwalani) feel free to contact in case of any query.

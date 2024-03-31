@@ -1,11 +1,10 @@
 package com.ron.chatting.pushNotificationCalls
 
-import com.ron.chatting.pushNotificationCalls.RetrofitClientFactory.getRetroFitClient
 import java.util.Objects
 
-internal class RonApiUtils(private val authKey: String) {
+internal class RonApiUtils(private var headerAuthKey: String) {
     val restApis: PushNotificationApis?
-        get() = Objects.requireNonNull(getRetroFitClient(authKey))?.create(
+        get() = Objects.requireNonNull(RetrofitClientFactory().getRetroFitClient(headerAuthKey))?.create(
             PushNotificationApis::class.java
         )
 }

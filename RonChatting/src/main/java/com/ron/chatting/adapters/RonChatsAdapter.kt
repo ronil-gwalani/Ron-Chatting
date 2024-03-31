@@ -14,7 +14,7 @@ import com.ron.chatting.models.RonMessageModel
 
 internal class RonChatsAdapter(
     private var list: ArrayList<RonMessageModel>,
-    private var senderID: String
+    private var senderID: String,
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val SENDER_TYPE = 1
@@ -58,10 +58,14 @@ internal class RonChatsAdapter(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val message = list[position]
+        holder.setIsRecyclable(false)
+        val message = list[holder.adapterPosition]
         if (holder.javaClass == SenderHolder::class.java) {
             with((holder as SenderHolder).binding) {
                 txtMessage.text = message.message
+//                txtMessage.setTrimLines(6)
+//                txtMessage.setExpandedTextColor(R.color.receiverChatBoxColor)
+//                txtMessage.setExpandedTextColor(R.color.receiverChatBoxColor)
                 messageTiming.text = dateTimeFromTimeStamp(message.timeStamp ?: "")
                 if (messageTiming.text.toString().isNotEmpty()) {
                     frame.showTimingListener(messageTiming)
@@ -70,9 +74,13 @@ internal class RonChatsAdapter(
         } else {
             with((holder as ReceiverHolder).binding) {
                 txtMessage.text = message.message
+//                txtMessage.setTrimLines(6)
+//                txtMessage.setExpandedTextColor(R.color.senderChatBoxColor)
+//                txtMessage.setCollapsedTextColor(R.color.senderChatBoxColor)
+
                 messageTiming.text = dateTimeFromTimeStamp(message.timeStamp ?: "")
                 if (messageTiming.text.toString().isNotEmpty()) {
-                    frame.showTimingListener(messageTiming  )
+                    frame.showTimingListener(messageTiming)
                 }
             }
         }

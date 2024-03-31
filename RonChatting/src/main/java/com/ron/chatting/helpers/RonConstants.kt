@@ -29,7 +29,8 @@ internal interface RonConstants {
         const val userModel = "userModel"
         const val requireNotifications = "requireNotifications"
         const val requiresChatsNotYetStartedText = "requiresChatsNotYetStartedText"
-        const val firebaseServerKeyForNotifications = "firebaseServerKeyForNotifications"
+        const val accessTokenForNotifications = "accessTokenForNotifications"
+        const val firebaseProjectId = "firebaseProjectId"
 
     }
 

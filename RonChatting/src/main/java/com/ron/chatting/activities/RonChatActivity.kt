@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,19 +21,19 @@ import com.ron.chatting.helpers.RonConstants
 import com.ron.chatting.helpers.RonSharedPrefUtils
 import com.ron.chatting.models.RonMessageInfoModel
 import com.ron.chatting.models.RonMessageModel
-import com.ron.chatting.models.RonPushNotificationModel
+import com.ron.chatting.models.RonPushNewNotificationMessageModel
+import com.ron.chatting.models.RonPushNewNotificationModel
+import com.ron.chatting.pushNotificationCalls.PushNotificationApis
 import com.ron.chatting.pushNotificationCalls.PushNotificationChatListener
 import com.ron.chatting.pushNotificationCalls.RonApiUtils
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 internal class RonChatActivity : AppCompatActivity() {
     private val preferences by lazy { RonSharedPrefUtils(this) }
-    private val restApis by lazy {
-        RonApiUtils(preferences.getStringValue(RonConstants.Preferences.firebaseServerKeyForNotifications)).restApis
-    }
+    private var restApis: PushNotificationApis? = null
     private val databaseReference by lazy { FirebaseDatabase.getInstance().reference }
     private val binding by lazy { ActivityRonChatBinding.inflate(layoutInflater) }
     private val messageInfoModel by lazy {
@@ -51,13 +52,17 @@ internal class RonChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        restApis = RonApiUtils(
+            preferences.getStringValue(RonConstants.Preferences.accessTokenForNotifications),
+        ).restApis
         val messages: ArrayList<RonMessageModel> = ArrayList()
         binding.name.text = messageInfoModel.receiverName
         if (!messageInfoModel.receiverImage.isNullOrEmpty()) {
             Glide.with(binding.imgProfile).load(messageInfoModel.receiverImage)
                 .placeholder(R.drawable.ron_user).into(binding.imgProfile)
         }
-        val adapter = RonChatsAdapter(messages, messageInfoModel.senderID)
+        val adapter =
+            RonChatsAdapter(messages, messageInfoModel.senderID)
         binding.messagesRecycler.adapter = adapter
         binding.imgBack.setOnClickListener { finishAndRemoveTask() }
         databaseReference.child(RonConstants.FirebaseValues.chatting)
@@ -69,7 +74,7 @@ internal class RonChatActivity : AppCompatActivity() {
                     }
                 } else {
                     if (preferences.getBooleanValue(
-                            RonConstants.Preferences.requireNotifications,
+                            RonConstants.Preferences.requiresChatsNotYetStartedText,
                             true
                         )
                     ) {
@@ -137,8 +142,7 @@ internal class RonChatActivity : AppCompatActivity() {
 
     private fun sendNotification(
         message: RonMessageModel,
-
-        ) {
+    ) {
         val hashMap = HashMap<String, String>()
         hashMap[RonConstants.FirebaseValues.fcmChattingNotification] =
             RonConstants.FirebaseValues.fcmChattingNotification
@@ -154,20 +158,30 @@ internal class RonChatActivity : AppCompatActivity() {
         hashMap[RonConstants.FirebaseValues.senderImage] = messageInfoModel.senderImage ?: ""
         hashMap[RonConstants.FirebaseValues.receiverImage] = messageInfoModel.receiverImage ?: ""
         hashMap[RonConstants.FirebaseValues.notificationMessage] = message.message ?: ""
-        restApis?.sendMessage(RonPushNotificationModel(messageInfoModel.receiverFcmId, hashMap))
-            ?.enqueue(object : Callback<Response<ResponseBody?>?> {
-                override fun onResponse(
-                    call: Call<Response<ResponseBody?>?>,
-                    response: Response<Response<ResponseBody?>?>
-                ) {
-                    Log.d("onApiSuccess", ": " + response.isSuccessful)
-                }
+        CoroutineScope(Dispatchers.IO).launch {
+            restApis?.sendMessageWithV1Api(
+                preferences.getStringValue(RonConstants.Preferences.firebaseProjectId),
+                RonPushNewNotificationModel(
+                    RonPushNewNotificationMessageModel(
+                        messageInfoModel.receiverFcmId,
+                        hashMap
+                    )
+                )
+            ).also {
+                if (it?.isSuccessful == true) {
+                    Log.d("onApiSuccess", "Notification Send Successfully")
 
-                override fun onFailure(call: Call<Response<ResponseBody?>?>, t: Throwable) {
-                    Log.d("onFailure", ": " + t.message)
-                }
-            })
+                } else {
+                    if (it?.code() == 401) {
+                        Log.d("sendNotification", ": Generating new Access Token")
+                        getFcmAccess(message)
+                    } else {
+                        Log.d("onApiFailure", ": ${it?.errorBody()}")
+                    }
 
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -194,6 +208,31 @@ internal class RonChatActivity : AppCompatActivity() {
 
         }
 
+    }
+
+
+    private suspend fun getFcmAccess(
+        message: RonMessageModel,
+    ): String? {
+        return CoroutineScope(Dispatchers.IO).async {
+            try {
+                val inputStream = resources.openRawResource(R.raw.service_account)
+                val googleCredentials = GoogleCredentials
+                    .fromStream(inputStream)
+                    .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
+                googleCredentials.refresh()
+                googleCredentials.accessToken.tokenValue
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }.await().also {
+            preferences.setValue(RonConstants.Preferences.accessTokenForNotifications, it)
+            restApis = RonApiUtils(
+                preferences.getStringValue(RonConstants.Preferences.accessTokenForNotifications),
+            ).restApis
+            sendNotification(message)
+        }
     }
 }
 

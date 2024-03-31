@@ -3,6 +3,7 @@ package com.ron.chatting
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.messaging.FirebaseMessaging
@@ -17,7 +18,6 @@ import com.ron.chatting.models.RonChattingUserModel
 import com.ron.chatting.models.RonMessageInfoModel
 import com.ron.chatting.pushNotificationCalls.PushNotificationChatListener
 import java.util.Objects
-
 
 class RonChattingUtils(private val context: Context) {
 
@@ -40,11 +40,11 @@ class RonChattingUtils(private val context: Context) {
 
     fun register(
         model: RonChattingUserModel,
-        firebaseServerKey: String,
         callback: UserRegisterCallbacks? = null
     ) {
+
         preferences.setValue(
-            RonConstants.Preferences.firebaseServerKeyForNotifications, firebaseServerKey
+            RonConstants.Preferences.firebaseProjectId, FirebaseApp.getInstance().options.projectId
         )
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             FirebaseFirestore.getInstance().collection(RonConstants.FirebaseValues.chatting)
@@ -61,6 +61,7 @@ class RonChattingUtils(private val context: Context) {
 
 
     }
+
 
     fun signOut(callback: UserLogoutCallback? = null) {
         val model = preferences.getUserModel()
@@ -85,6 +86,11 @@ class RonChattingUtils(private val context: Context) {
                     val receiverModel = task.result.toObject(RonChattingUserModel::class.java)
                     val senderModel = preferences.getUserModel()
                     if (receiverModel != null) {
+                        if (receiverId == senderModel?.userID) {
+                            callback?.onErrorFound("Cannot Connect with itself")
+                            return@addOnCompleteListener
+                        }
+
                         callback?.onProcessCompleted()
                         context.startActivity(
                             Intent(context, RonChatActivity::class.java).putExtra(
@@ -150,7 +156,6 @@ class RonChattingUtils(private val context: Context) {
                 it.also { model ->
                     model.fcmToken = token
                 },
-                preferences.getStringValue(RonConstants.Preferences.firebaseServerKeyForNotifications)
             )
         }
 
